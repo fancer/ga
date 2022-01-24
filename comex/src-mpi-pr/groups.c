@@ -404,6 +404,7 @@ void comex_group_init()
     
     /* populate g_state */
 
+    printf("(comex_group_init) Got to 1\n");
     /* dup MPI_COMM_WORLD and get group, rank, and size */
     status = MPI_Comm_dup(MPI_COMM_WORLD, &(g_state.comm));
     COMEX_ASSERT(MPI_SUCCESS == status);
@@ -413,6 +414,7 @@ void comex_group_init()
     COMEX_ASSERT(MPI_SUCCESS == status);
     status = MPI_Comm_size(g_state.comm, &(g_state.size));
     COMEX_ASSERT(MPI_SUCCESS == status);
+    printf("(comex_group_init) Got to 2\n");
 
 #if DEBUG_TO_FILE
     {
@@ -428,8 +430,10 @@ void comex_group_init()
     /* need to figure out which proc is master on each node */
     g_state.hostid = (long*)malloc(sizeof(long)*g_state.size);
     g_state.hostid[g_state.rank] = xgethostid();
+    printf("(comex_group_init) Got to 3\n");
     status = MPI_Allgather(MPI_IN_PLACE, 1, MPI_LONG,
             g_state.hostid, 1, MPI_LONG, g_state.comm);
+    printf("(comex_group_init) Got to 4\n");
     COMEX_ASSERT(MPI_SUCCESS == status);
      /* First create a temporary node communicator and then
       * split further into number of gruoups within the node */
@@ -461,8 +465,10 @@ void comex_group_init()
     MPI_Comm_rank(temp_node_comm, &node_group_rank);
     int node_rank0, num_nodes;
     node_rank0 = (node_group_rank == 0) ? 1 : 0;
+    printf("(comex_group_init) Got to 5\n");
     MPI_Allreduce(&node_rank0, &num_nodes, 1, MPI_INT, MPI_SUM,
         g_state.comm);
+    printf("(comex_group_init) Got to 6\n");
     smallest_rank_with_same_hostid = g_state.rank;
     largest_rank_with_same_hostid = g_state.rank;
     for (i=0; i<g_state.size; ++i) {
@@ -490,7 +496,9 @@ void comex_group_init()
     int is_node_ranks_packed = get_progress_rank_distribution_on_node();
     int split_group_size;
     split_group_size = node_group_size / num_progress_ranks_per_node;
+    printf("(comex_group_init) Got to 7\n");
      MPI_Comm_free(&temp_node_comm);
+    printf("(comex_group_init) Got to 8\n");
     g_state.master = (int*)malloc(sizeof(int)*g_state.size);
     g_state.master[g_state.rank] = get_my_master_rank_with_same_hostid(g_state.rank, 
         split_group_size, smallest_rank_with_same_hostid, largest_rank_with_same_hostid,
@@ -500,8 +508,10 @@ void comex_group_init()
     printf("[%d] rank; largest_rank_with_same_hostid[%d]; my master is:[%d]\n",
         g_state.rank, largest_rank_with_same_hostid, g_state.master[g_state.rank]);
 #endif
+    printf("(comex_group_init) Got to 9\n");
     status = MPI_Allgather(MPI_IN_PLACE, 1, MPI_INT,
             g_state.master, 1, MPI_INT, g_state.comm);
+    printf("(comex_group_init) Got to 10\n");
     COMEX_ASSERT(MPI_SUCCESS == status);
 
     COMEX_ASSERT(group_list == NULL);
@@ -567,8 +577,10 @@ void comex_group_init()
         printf("Creating comm: I AM WORKER[%ld]\n", g_state.rank);
 #endif
     }
+    printf("(comex_group_init) Got to 11\n");
     status = MPI_Comm_split(MPI_COMM_WORLD, proc_split_group_stamp,
             g_state.rank, &(g_state.node_comm));
+    printf("(comex_group_init) Got to 12\n");
     COMEX_ASSERT(MPI_SUCCESS == status);
     /* node rank */
     status = MPI_Comm_rank(g_state.node_comm, &(g_state.node_rank));
@@ -588,6 +600,7 @@ void comex_group_init()
             RANK_OR_PID, g_state.rank, g_state.size);
     }
 #endif
+    printf("(comex_group_init) Got to 13\n");
 }
 
 

@@ -374,8 +374,10 @@ int comex_init()
     /*MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_RETURN);*/
 
 
+    printf("(comex_init) Call comex_group_init\n");
     /* groups */
     comex_group_init();
+    printf("(comex_init) Completed comex_group_init\n");
 
     /* env vars */
     {
@@ -534,6 +536,7 @@ int comex_init()
     num_mutexes = NULL;
     lq_heads = NULL;
 
+    printf("(comex_init) Got to 1\n");
     /* nonblocking message queues */
     nb_state = (nb_t*)malloc(sizeof(nb_t) * nb_max_outstanding);
     COMEX_ASSERT(nb_state);
@@ -595,6 +598,7 @@ int comex_init()
 #endif
 #endif
 
+    printf("(comex_init) Got to 2\n");
     /* reg_cache */
     /* note: every process needs a reg cache and it's always based on the
      * world rank and size */
@@ -614,6 +618,7 @@ int comex_init()
 
     status = _set_affinity(g_state.node_rank);
     COMEX_ASSERT(0 == status);
+    printf("(comex_init) Got to 3\n");
 
     if (_is_master()) {
         /* TODO: wasteful O(p) storage... */
@@ -625,6 +630,7 @@ int comex_init()
         /* start the server */
         _progress_server();
     }
+    printf("(comex_init) Got to 4\n");
 
     /* Synch - Sanity Check */
     /* This barrier is on the world worker group */
@@ -649,6 +655,7 @@ int comex_init()
     fprintf(stderr, "[%d] comex_init() success\n", g_state.rank);
 #endif
 
+    printf("(comex_init) Got to 5\n");
     return COMEX_SUCCESS;
 }
 

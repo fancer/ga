@@ -322,7 +322,6 @@ void pnga_initialize()
 #ifdef MSG_COMMS_MPI
         MPI_Comm comm;
 #endif
-
     if(GAinitialized)
     {
         GA_Internal_Threadsafe_Unlock();
@@ -337,6 +336,7 @@ void pnga_initialize()
     {
         /* assure that GA will not alocate more shared memory than specified */
         if(GA_memory_limited) ARMCI_Set_shm_limit(GA_total_memory);
+    printf("p[%d] (pnga_initialize) Call ARMCI_Init\n",GAme);
         if (_ga_initialize_c) {
             if (_ga_initialize_args) {
                 ARMCI_Init_args(_ga_argc, _ga_argv);
@@ -399,6 +399,7 @@ void pnga_initialize()
     mapALL = (Integer*)malloc((GAnproc+MAXDIM-1)*sizeof(Integer*));
 
     GAme = (Integer)armci_msg_me();
+    printf("p[%d] (pnga_initialize) Got to 1\n",GAme);
     if(GAme<0 || GAme>GAnproc) 
        pnga_error("ga_init:message-passing initialization problem: my ID=",GAme);
 
@@ -427,6 +428,7 @@ void pnga_initialize()
        PGRP_LIST[0].map_proc_list[i+j] = i;
        PGRP_LIST[0].inv_map_proc_list[i] = i+j;
     }
+    printf("p[%d] (pnga_initialize) Got to 2\n",GAme);
 
     /* Set up group for doing cluster merge. Start by checking if
      * number of procs per node is the same for all nodes */
@@ -448,6 +450,7 @@ void pnga_initialize()
     } else {
       _mirror_gop_grp = GA_World_Proc_Group;
     }
+    printf("p[%d] (pnga_initialize) Got to 3\n",GAme);
 
 
 
@@ -467,6 +470,7 @@ void pnga_initialize()
     for (i=0; i<2*MAXDIM; i++) {
 		GA_Update_Flags[GAme][i] = 0;
 	}
+    printf("p[%d] (pnga_initialize) Got to 4\n",GAme);
 
     /* set MA error function */
     MA_set_error_callback(ARMCI_Error);
@@ -498,6 +502,7 @@ void pnga_initialize()
     MPI_Comm_dup(comm, &GA_MPI_World_comm_dup);
 #endif
     GA_Internal_Threadsafe_Unlock();
+    printf("p[%d] (pnga_initialize) Got to 5\n",GAme);
 }
 
 
